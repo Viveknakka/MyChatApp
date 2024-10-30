@@ -1,11 +1,11 @@
-import { Avatar, Box, CircularProgress, FormControl, IconButton, TextField, Typography, useMediaQuery } from '@mui/material'
+import { Avatar, Box, CircularProgress,  IconButton, TextField, Typography, useMediaQuery } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { ChatState } from '../Context/ChatProvider'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import InfoIcon from '@mui/icons-material/Info';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CustomizedDialogs from './Profile';
-import {getSender, getSenderDetails} from '../config/ChatLogics'
+import { getSenderDetails} from '../config/ChatLogics'
 import GroupUpdate from './GroupUpdate';
 import axios from 'axios';
 import env from '../Settings'
@@ -93,7 +93,7 @@ console.log(notification)
         setOpen2(false)
     }
     const handleSend = async (e) => {
-        if (e.key == 'Enter' && message.trim()) {
+        if (e.key === 'Enter' && message.trim()) {
             socket.emit('stopTyping', selectedChat._id);
             
             try {
@@ -134,7 +134,7 @@ console.log(notification)
         }
         // socket.emit('typing', selectedChat._id)
         console.log('typing')
-        let lastTypingTIme = new Date().getTime();
+       // let lastTypingTIme = new Date().getTime();
         var timerLength = 1000;
         setTimeout(() => {
                 socket.emit('stopTyping', selectedChat._id);

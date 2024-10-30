@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -8,9 +8,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 import Typography from '@mui/material/Typography';
-import { Avatar } from '@mui/material';
+import { Avatar, TextField, Snackbar } from '@mui/material';
 import { ChatState } from '../Context/ChatProvider';
+import axios from 'axios';
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -26,7 +29,7 @@ const BootstrapDialogTitle = (props) => {
   return (
     <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
       {children}
-      {onClose ? (
+      {onClose && (
         <IconButton
           aria-label="close"
           onClick={onClose}
@@ -39,7 +42,7 @@ const BootstrapDialogTitle = (props) => {
         >
           <CloseIcon />
         </IconButton>
-      ) : null}
+      )}
     </DialogTitle>
   );
 };
@@ -49,8 +52,99 @@ BootstrapDialogTitle.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-export default function CustomizedDialogs(props) {
-  const {user} = ChatState()
+export default function ProfileDialog(props) {
+  const { user, setUser } = ChatState();
+  const [newEmail, setNewEmail] = useState(props.user.email);
+  const [newPic, setNewPic] = useState(props.user.pic);
+  const [previewPic, setPreviewPic] = useState(props.user.pic);
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [isEditingPic, setIsEditingPic] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
+
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleFileChange = async (e) => {
+    const pics = e.target.files[0];
+    if (!pics) {
+      handleSnackbar('Please check an image!', 'warning');
+      return;
+    }
+
+    if (pics.type === "image/jpeg" || pics.type === "image/png") {
+      const data = new FormData();
+      data.append("file", pics);
+      data.append("upload_preset", "chat-app");
+      data.append("cloud_name", "dn6lxcybf");
+
+      try {
+        const response = await axios.post("https://api.cloudinary.com/v1_1/dumugkpxd/image/upload", data);
+        const pic_url = response.data.url.toString();
+        setNewPic(pic_url);
+        setPreviewPic(pic_url);
+        handleSnackbar('Image uploaded successfully!', 'success');
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        handleSnackbar('Error uploading image. Please try again.', 'error');
+      }
+    } else {
+      handleSnackbar('Please select a JPEG or PNG image!', 'warning');
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    setNewEmail(e.target.value);
+  };
+
+  const handleSaveChanges = async (event) => {
+    event.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append('email', newEmail);
+      if (newPic !== props.user.pic) {
+        formData.append('pic', newPic);
+      }
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+        `/api/user/updateprofile`,
+        formData,
+        config
+      );
+
+      setUser(data);
+      handleSnackbar('Profile updated successfully!', 'success');
+      props.onClose();
+      setIsEditingEmail(false);
+      setIsEditingPic(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      handleSnackbar('Failed to update profile.', 'error');
+    }
+  };
+
+  const handleCancel = () => {
+    setNewEmail(props.user.email);
+    setIsEditingEmail(false);
+    setIsEditingPic(false);
+    props.onClose();
+  };
+
   return (
     <div>
       <BootstrapDialog
@@ -59,13 +153,71 @@ export default function CustomizedDialogs(props) {
         open={props.open}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={props.onClose}>
-          {props.user.name}
+          Edit Profile
         </BootstrapDialogTitle>
         <DialogContent dividers>
-          <Avatar src={props.user.pic} alt={props.user.name} sx={{ margin: "auto", height: '100px', width: '100px' }} />
-          <Typography>Email: {props.user.email}</Typography>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <Avatar src={previewPic} alt={props.user.name} sx={{ margin: 'auto', height: '100px', width: '100px' }} />
+            <IconButton
+              color="primary"
+              sx={{ position: 'absolute', bottom: 0, right: 0 }}
+              onClick={() => setIsEditingPic(true)}
+            >
+              <EditIcon />
+            </IconButton>
+          </div>
+          {isEditingPic && (
+            <TextField
+              type="file"
+              inputProps={{ accept: 'image/*' }}
+              onChange={handleFileChange}
+              fullWidth
+              margin="normal"
+            />
+          )}
+
+          <Typography variant="body1" sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+            {isEditingEmail ? (
+              <TextField
+                label="Email"
+                type="email"
+                value={newEmail}
+                onChange={handleEmailChange}
+                fullWidth
+                margin="normal"
+              />
+            ) : (
+              <>
+                Email: {newEmail}
+                <IconButton
+                  color="primary"
+                  onClick={() => setIsEditingEmail(true)}
+                  sx={{ ml: 1 }}
+                >
+                  <EditIcon />
+                </IconButton>
+              </>
+            )}
+          </Typography>
         </DialogContent>
+
+        <DialogActions>
+          <Button autoFocus onClick={handleSaveChanges} variant="contained">
+            Save Changes
+          </Button>
+          <Button onClick={handleCancel} color="secondary">
+            Cancel
+          </Button>
+        </DialogActions>
       </BootstrapDialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+      />
     </div>
   );
 }

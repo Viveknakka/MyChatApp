@@ -1,5 +1,5 @@
-import { Avatar, Box, TextField, Typography } from '@mui/material'
-import { display } from '@mui/system'
+import { Avatar, Box,  Typography } from '@mui/material'
+
 import React from 'react'
 
 function UserList({user,handleFunction}) {

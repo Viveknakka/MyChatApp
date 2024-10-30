@@ -4,6 +4,36 @@ const User = require('../models/userModel')
 const bcryptjs = require('bcryptjs');
 const { sendMail } = require('../services/NodeMailer');
 
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const { email, pic } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  if (email) {
+    user.email = email;
+  }
+
+  if (pic) {
+    user.pic = pic;
+  }
+
+  const updatedUser = await user.save();
+
+  res.status(200).json({
+    _id: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    pic: updatedUser.pic,
+    message: 'Profile updated successfully',
+  });
+});
+
+module.exports = { updateUserProfile };
+
 const setPassword = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -150,5 +180,5 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, authUser, allUsers ,setPassword,forgotPassword,verifyOTP};
+module.exports = { registerUser, authUser, allUsers ,setPassword,forgotPassword,verifyOTP,updateUserProfile};
 

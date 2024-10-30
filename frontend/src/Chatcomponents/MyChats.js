@@ -1,7 +1,7 @@
-import { Add, Close } from '@mui/icons-material'
-import { Alert, Avatar, Box, Button, IconButton, Modal, Stack, TextField, Typography } from '@mui/material'
+import { Add } from '@mui/icons-material'
+import {  Avatar, Box, Button, IconButton, Modal, TextField, Typography } from '@mui/material'
 import axios from 'axios'
-import React, { useContext, useEffect, useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import { getSender, getSenderDetails } from '../config/ChatLogics'
 import { ChatState } from '../Context/ChatProvider'
 import env from '../Settings'
@@ -13,14 +13,14 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 
 function MyChats({fetchAgain}) {
-    const t = ChatState()
+    //const t = ChatState()
     const {selectedChat,setSelectedChat, user, chats, setChats} = ChatState()
     const [loggedUser, setLoggedUser] = useState()
     const [open,setOpen] = useState(false)
     const [loading,setLoading] = useState(false)
     const [groupChatName, setGroupChatName] = useState()
     const [selectedUsers, setSelectedUsers] = useState([])
-    const [search, setSearch] = useState()
+    //const [search, setSearch] = useState()
     const [searchResult, setSearchResult] = useState()
     const matches = useMediaQuery('(min-width:600px)');
     // console.log(t.user)

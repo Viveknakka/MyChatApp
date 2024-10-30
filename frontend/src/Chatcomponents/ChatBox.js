@@ -1,11 +1,11 @@
-import { Box, useMediaQuery } from '@mui/material'
+import { Box } from '@mui/material'
 import React from 'react'
 import { ChatState } from '../Context/ChatProvider'
 import SingleChat from './SingleChat'
 
 function ChatBox({fetchAgain, setFetchAgain}) {
     const {selectedChat}  = ChatState()
-    const matches = useMediaQuery('(min-width:600px)');
+    //const matches = useMediaQuery('(min-width:600px)');
     return (
         <Box
             display={"flex"}

@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
-import { Avatar, Box, Button, Divider, Drawer, IconButton, Input, List, ListItem, Menu, MenuItem, TextField, Tooltip, Typography, useMediaQuery } from '@mui/material';
+import { Avatar, Box, Button, Divider, Drawer, List, ListItem, Menu, MenuItem, TextField, Tooltip, Typography, useMediaQuery } from '@mui/material';
 import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CustomizedDialogs from './Profile';
 import { ChatState } from '../Context/ChatProvider';
 import { useHistory } from 'react-router-dom';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import axios from 'axios';
 import ChatLoading from './ChatLoading';
 import env from '../Settings'
