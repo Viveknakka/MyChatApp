@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -54,14 +54,23 @@ BootstrapDialogTitle.propTypes = {
 
 export default function ProfileDialog(props) {
   const { user, setUser } = ChatState();
-  const [newEmail, setNewEmail] = useState(props.user.email);
-  const [newPic, setNewPic] = useState(props.user.pic);
-  const [previewPic, setPreviewPic] = useState(props.user.pic);
+  const [newEmail, setNewEmail] = useState('');
+  const [newPic, setNewPic] = useState('');
+  const [previewPic, setPreviewPic] = useState('');
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isEditingPic, setIsEditingPic] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
+  const [name,setName]=useState('');
+
+  useEffect(() => {
+    // Update the local state when the user prop changes
+    setName(props.user.name);
+    setNewEmail(props.user.email);
+    setNewPic(props.user.pic);
+    setPreviewPic(props.user.pic);
+  }, [props.user]);
 
   const handleSnackbar = (message, severity) => {
     setSnackbarMessage(message);
@@ -108,22 +117,17 @@ export default function ProfileDialog(props) {
   const handleSaveChanges = async (event) => {
     event.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append('email', newEmail);
-      if (newPic !== props.user.pic) {
-        formData.append('pic', newPic);
-      }
-
       const config = {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${user.token}`,
         },
       };
-
+      const userInfo = JSON.parse(localStorage.getItem('userinfo'));
+      const oldEmail = userInfo.email; 
       const { data } = await axios.put(
         `/api/user/updateprofile`,
-        formData,
+        { newEmail, newPic, oldEmail },
         config
       );
 
@@ -153,18 +157,21 @@ export default function ProfileDialog(props) {
         open={props.open}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={props.onClose}>
-          Edit Profile
+          {`${name}'s Profile`}
+         {/*{user._id === props.user._id ? "Edit Profile" : `${name}'s Profile`*/}
         </BootstrapDialogTitle>
         <DialogContent dividers>
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <Avatar src={previewPic} alt={props.user.name} sx={{ margin: 'auto', height: '100px', width: '100px' }} />
-            <IconButton
-              color="primary"
-              sx={{ position: 'absolute', bottom: 0, right: 0 }}
-              onClick={() => setIsEditingPic(true)}
-            >
-              <EditIcon />
-            </IconButton>
+            {user._id === props.user._id && (
+              <IconButton
+                color="primary"
+                sx={{ position: 'absolute', bottom: 0, right: 0 }}
+                onClick={() => setIsEditingPic(true)}
+              >
+                <EditIcon />
+              </IconButton>
+            )}
           </div>
           {isEditingPic && (
             <TextField
@@ -177,7 +184,7 @@ export default function ProfileDialog(props) {
           )}
 
           <Typography variant="body1" sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-            {isEditingEmail ? (
+            {isEditingEmail && user._id === props.user._id ? (
               <TextField
                 label="Email"
                 type="email"
@@ -189,22 +196,26 @@ export default function ProfileDialog(props) {
             ) : (
               <>
                 Email: {newEmail}
-                <IconButton
-                  color="primary"
-                  onClick={() => setIsEditingEmail(true)}
-                  sx={{ ml: 1 }}
-                >
-                  <EditIcon />
-                </IconButton>
+                {user._id === props.user._id && (
+                  <IconButton
+                    color="primary"
+                    onClick={() => setIsEditingEmail(true)}
+                    sx={{ ml: 1 }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                )}
               </>
             )}
           </Typography>
         </DialogContent>
 
         <DialogActions>
-          <Button autoFocus onClick={handleSaveChanges} variant="contained">
-            Save Changes
-          </Button>
+          {user._id === props.user._id && (
+            <Button autoFocus onClick={handleSaveChanges} variant="contained">
+              Save Changes
+            </Button>
+          )}
           <Button onClick={handleCancel} color="secondary">
             Cancel
           </Button>

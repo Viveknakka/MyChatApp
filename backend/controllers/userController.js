@@ -5,34 +5,42 @@ const bcryptjs = require('bcryptjs');
 const { sendMail } = require('../services/NodeMailer');
 
 const updateUserProfile = asyncHandler(async (req, res) => {
-  const { email, pic } = req.body;
+  try {
+    const { email, pic ,oldEmail} = req.body;
 
-  const user = await User.findById(req.user._id);
+    // Find user by ID (better than email to avoid accidentally updating multiple users)
+    const user = await User.findByOne({oldEmail});
 
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update email and pic if they are provided in the request
+    if (email) {
+      user.email = email;
+    }
+    if (pic) {
+      user.pic = pic;
+    }
+
+    // Save updated user to the database
+    const updatedUser = await user.save();
+
+    // Send response with the updated user data
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      pic: updatedUser.pic,
+      message: 'Profile updated successfully',
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Failed to update profile', error: error.message });
   }
-
-  if (email) {
-    user.email = email;
-  }
-
-  if (pic) {
-    user.pic = pic;
-  }
-
-  const updatedUser = await user.save();
-
-  res.status(200).json({
-    _id: updatedUser._id,
-    name: updatedUser.name,
-    email: updatedUser.email,
-    pic: updatedUser.pic,
-    message: 'Profile updated successfully',
-  });
 });
 
-module.exports = { updateUserProfile };
+
 
 const setPassword = async (req, res) => {
   const { email, password } = req.body;

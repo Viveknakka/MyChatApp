@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { Avatar, Box, Button, Divider, Drawer, List, ListItem, Menu, MenuItem, TextField, Tooltip, Typography, useMediaQuery } from '@mui/material';
 import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import CustomizedDialogs from './Profile';
+import ProfileDialog from './Profile';
+
 import { ChatState } from '../Context/ChatProvider';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -234,7 +235,7 @@ function SideDrawer() {
         <Button onClick={handleClickOpen} >
             <Avatar src={ user?user.pic:""}/> Profile
         </Button>
-        <CustomizedDialogs onClose={handleClose3} open={open3} user={user} />
+        <ProfileDialog onClose={handleClose3} open={open3} user={user} />
                             
         </MenuItem>
         <MenuItem>
