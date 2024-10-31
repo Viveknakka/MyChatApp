@@ -3,8 +3,39 @@ const generateToken = require('../config/generateToken');
 const User = require('../models/userModel')
 const bcryptjs = require('bcryptjs');
 const { sendMail } = require('../services/NodeMailer');
+const addFriend = async (req, res) => {
+  const { id, friendId } = req.body; // Get the user IDs from the request body
+  try {
+      const user = await User.findById(id);
+      const friend = await User.findById(friendId);
+      
+      // Check if the user and friend exist
+      if (!user || !friend) {
+          return res.status(404).json({ message: 'User or Friend not found' });
+      }
 
-const updateUserProfile = asyncHandler(async (req, res) => {
+      // Add friend to user's friends list
+      if (!user.friends.includes(friendId)) {
+          user.friends.push(friendId);
+      }
+      
+      // Add user to friend's friends list
+      if (!friend.friends.includes(id)) {
+          friend.friends.push(id);
+      }
+      
+      // Save both users
+      await user.save();
+      await friend.save();
+      
+      res.status(200).json({ message: 'Friend added successfully' });
+  } catch (error) {
+      console.error('Error adding friend:', error);
+      res.status(500).json({ message: 'Failed to add friend', error: error.message });
+  }
+};
+
+const updateUserProfile = async (req, res) => {
   try {
     const { email, pic ,oldEmail} = req.body;
 
@@ -38,10 +69,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     console.error('Error updating profile:', error);
     res.status(500).json({ message: 'Failed to update profile', error: error.message });
   }
-});
-
-
-
+};
 const setPassword = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -188,5 +216,5 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, authUser, allUsers ,setPassword,forgotPassword,verifyOTP,updateUserProfile};
+module.exports = { registerUser, authUser, allUsers ,setPassword,forgotPassword,verifyOTP,updateUserProfile,addFriend};
 

@@ -13,7 +13,11 @@ const userSchema = mongoose.Schema({
     otpExpires:{
         type:Date,
         required:false
-    }   
+    },
+    friends: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' // Reference to the User model
+    }]  
 }, {
     timestamps: true
 })
