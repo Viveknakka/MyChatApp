@@ -40,8 +40,7 @@ backend > npm start
 
 ### Signing Up
 - User can sign up using their gmail, through which they are going to be verified.
-  
-<img href="https://drive.google.com/file/d/1_gjSyp5E98T-IvdekPYhAOLsy0QQrnim/view?usp=drive_link">
+ 
 ---
 
 - Verifying through gmail.
@@ -55,5 +54,5 @@ backend > npm start
 
 ### Dashboard
 
-![Screenshot 2024-08-14 062749](https://github.com/user-attachments/assets/1ed02e6c-7114-43d9-a356-af0af84a8c01)
+![Screenshot 2024-08-14 062749](https://drive.google.com/file/d/1_gjSyp5E98T-IvdekPYhAOLsy0QQrnim/view?usp=drive_link)
 
