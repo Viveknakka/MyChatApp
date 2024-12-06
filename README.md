@@ -34,6 +34,7 @@ backend > npm start
 - Profile Management
 - User Search
 - Password Reset
+## Future Enhancements
 - Interactive maps to enable users to leave reviews, enhancing community engagement.
 - Event Scheduler to create, invite and track RSVPs.
   
