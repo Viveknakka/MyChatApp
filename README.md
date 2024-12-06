@@ -10,6 +10,7 @@ A MERN stack social media application.
 - Mongoose
 - Bcrypt
 - Socket.io
+- cloudinary
 
 ## Pre Steps
 
