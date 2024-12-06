@@ -1,7 +1,7 @@
 # Forum Chat App
 A MERN stack social media application.
 
-## Key dependencies
+## Key dependencies 
 - React
 - React-Router-Dom
 - MaterialUI
