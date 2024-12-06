@@ -18,7 +18,7 @@ A MERN stack social media application.
 ```
 cd frontend
 frontend > npm i
-frontend > npm run dev
+frontend > npm start
 ```
 
 ### To run Node.js/Express backend 
